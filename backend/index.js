@@ -27,41 +27,33 @@ app.get("/api/initialize-database-with-seed-data", async (req, res) => {
 app.get('/api/transactions', async (req, res) => {
     const { page = 1, perPage = 10, searchText = '', month } = req.query;
 
-    // Parse the month, defaulting to 3 if not provided or invalid
     const parsedMonth = parseInt(month);
 
-    // Function to check if a string is a valid number
     const isNumeric = (str) => {
         if (typeof str != "string") return false
         return !isNaN(str) && !isNaN(parseFloat(str))
     }
 
-    // Prepare the search criteria
     let searchCriteria = {};
 
     if (searchText) {
         if (isNumeric(searchText)) {
-            // If searchText is a number, search in both price and id fields
             const numericValue = parseFloat(searchText);
             searchCriteria.$or = [
                 { price: numericValue },
-                { id: Math.floor(numericValue) } // Assuming id is an integer
+                { id: Math.floor(numericValue) }
             ];
         } else {
-            // If searchText is not a number, use text search
             searchCriteria.$text = { $search: searchText };
         }
     }
 
-    // Add the month criteria
     searchCriteria.$expr = { $eq: [{ $month: "$dateOfSale" }, parsedMonth] };
 
 
     try {
-        // Count total transactions matching the search criteria
         const totalTransactions = await ItemModel.countDocuments(searchCriteria);
 
-        // Fetch transactions based on pagination
         const transactions = await ItemModel.find(searchCriteria)
             .skip((page - 1) * perPage)
             .limit(parseInt(perPage))
@@ -124,7 +116,6 @@ app.get('/api/statistics/:month', async (req, res) => {
 });
 
 
-// API for generating data for the bar chart with custom price ranges
 app.get('/api/bar-chart/:month', async (req, res) => {
     const month = parseInt(req.params.month);
 
@@ -132,26 +123,24 @@ app.get('/api/bar-chart/:month', async (req, res) => {
         return res.status(400).json({ error: 'Month is required' });
     }
 
-    // Convert month to integer for comparison (expecting month from 1-12)
     const selectedMonth = parseInt(month, 10);
 
     try {
-        // Aggregation pipeline to group items by price range and count items in each range
         const priceRangeData = await ItemModel.aggregate([
             {
                 $match: {
                     $expr: {
                         $eq: [{ $month: '$dateOfSale' }, month]
                     }
-                } // Match transactions from the selected month
+                }
             },
             {
                 $bucket: {
-                    groupBy: '$price', // Group items by price
-                    boundaries: [0, 101, 201, 301, 401, 501, 601, 701, 801, 901], // Define price range boundaries
-                    default: '901 above', // Group items over the highest boundary into "901+"
+                    groupBy: '$price',
+                    boundaries: [0, 101, 201, 301, 401, 501, 601, 701, 801, 901],
+                    default: 'above 901',
                     output: {
-                        count: { $sum: 1 } // Count number of items in each range
+                        count: { $sum: 1 }
                     }
                 }
             }

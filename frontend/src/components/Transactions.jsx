@@ -20,18 +20,18 @@ export const Transactions = () => {
         const response = await fetch(backendUri(`api/transactions?searchText=${searchText}&month=${selectedMonth}`));
         const { transactions, total } = await response.json();
         setTransaction(transactions);
-        setPages(prev => { return { ...prev, totalPage: total > 10 ? total / 10 : 1 } });
+        setPages(prev => { return { ...prev, totalPage: total > 10 ? Math.ceil(total / 10) : 1 } });
     }
 
     useEffect(() => {
         const fetchTransaction = async () => {
-            const response = await fetch(backendUri(`api/transactions?month=${selectedMonth}`));
+            const response = await fetch(backendUri(`api/transactions?month=${selectedMonth}&page=${page.page}`));
             const { transactions, total } = await response.json();
             setTransaction(transactions);
-            setPages(prev => { return { ...prev, totalPage: total > 10 ? total / 10 : 1 } });
+            setPages(prev => { return { ...prev, totalPage: total > 10 ? Math.ceil(total / 10) : 1 } });
         }
         fetchTransaction();
-    }, [selectedMonth])
+    }, [selectedMonth, page.page])
 
     return (
         <div className="p-3 py-4  h-full flex flex-col justify-between" >
@@ -74,10 +74,10 @@ export const Transactions = () => {
                 </div>
             </div>
             <div className='flex justify-evenly'>
-                <button className="bg-white px-2 rounded flex items-center gap-2" > {triangle(-90)} prev</button>
+                <button onClick={() => page.page > 1 && setPages(prev => ({ ...prev, page: prev.page - 1 }))} className="bg-white px-2 rounded flex items-center gap-2" > {triangle(-90)} prev</button>
                 <div className="bg-white rounded px-2 w-max pt-1" >{page.page}/{page.totalPage}</div>
-                <button className="bg-white px-2 py-1 rounded flex items-center gap-2" >next {triangle(90)}</button>
+                <button onClick={() => page.page < page.totalPage && setPages(prev => ({ ...prev, page: prev.page + 1 }))} className="bg-white px-2 py-1 rounded flex items-center gap-2" >next {triangle(90)}</button>
             </div>
-        </div>
+        </div >
     )
 }

@@ -9,7 +9,7 @@ export const BarChart = ({ month, barChart }) => {
         const chart = new Chart(chartRef.current, {
             type: 'bar',
             data: {
-                labels: barChart.map(row => row._id),
+                labels: barChart.map(row => isNaN(parseInt(row._id)) ? row._id : (`${row._id} - ${row._id === 0 ? row._id + 100 : row._id + 99} `)),
                 datasets: [
                     {
                         label: 'Bar Chart Stats - ' + months[month - 1],

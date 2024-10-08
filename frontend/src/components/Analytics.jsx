@@ -24,7 +24,6 @@ export const Analytics = () => {
             setStatistics(analyticsData.statistics);
             setBarChart(analyticsData.barChart.priceRangeData)
             setPieChart(analyticsData.pieChart)
-            console.log(analyticsData)
         }
         fetchAnalytics();
     }, [selectedMonth])
