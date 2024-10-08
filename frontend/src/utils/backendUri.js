@@ -1,1 +1,1 @@
-export const backendUri = (api) => `https://roxiler-assignment-ten.vercel.app/${api}`;
+export const backendUri = (api) => `https://roxiler-assignment-chi.vercel.app/${api}`;
