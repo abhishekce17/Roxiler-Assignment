@@ -173,8 +173,8 @@ app.get('/api/pie-chart-category/:month', async (req, res) => {
             },
             {
                 $group: {
-                    _id: "$id",
-                    category: { $first: "$category" },
+                    _id: "$category",
+                    // category: { $first: "$category" },
                     count: { $sum: 1 }
                 }
             },
