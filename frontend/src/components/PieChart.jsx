@@ -19,7 +19,7 @@ export const PieChart = ({ pieChart }) => {
         const chart = new Chart(chartRef.current, {
             type: 'pie',
             data: {
-                labels: pieChart.map(item => item.category),
+                labels: pieChart.map(item => item._id),
                 datasets: [
                     {
                         label: 'Category Distribution',
