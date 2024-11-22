@@ -178,9 +178,9 @@ app.get('/api/pie-chart-category/:month', async (req, res) => {
                     count: { $sum: 1 }
                 }
             },
-            {
-                $sort: { count: -1 }
-            }
+            // {
+            //     $sort: { count: -1 }
+            // }
         ]);
 
         return res.json(categoryData);
